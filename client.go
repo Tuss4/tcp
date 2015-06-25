@@ -22,11 +22,21 @@ func main() {
 	for scanner.Scan() {
 		switch {
 		case scanner.Text() == "quit":
+			_, err := conn.Write([]byte(fmt.Sprintf("%v left.", uname)))
+			if err != nil {
+				log.Fatal(err)
+			}
+			r := make([]byte, 255)
+			resp, err := conn.Read(r)
+			if err != nil {
+				log.Fatal(err)
+			}
+			println(string(r[:resp]))
 			conn.Close()
 			os.Exit(1)
 		default:
 			message := []byte(scanner.Text())
-			_, err = conn.Write(message)
+			_, err := conn.Write(message)
 			if err != nil {
 				log.Fatal(err)
 			}

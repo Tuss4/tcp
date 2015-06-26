@@ -36,7 +36,8 @@ func main() {
 			os.Exit(1)
 		default:
 			message := []byte(scanner.Text())
-			_, err := conn.Write(message)
+			msg_strt := fmt.Sprintf("%v: %v", uname, string(message))
+			_, err := conn.Write([]byte(msg_strt))
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -45,8 +46,7 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			msg_strt := fmt.Sprintf("%v:", uname)
-			println(msg_strt, string(rb[:resp]))
+			println(string(rb[:resp]))
 		}
 	}
 }

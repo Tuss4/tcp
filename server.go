@@ -1,7 +1,6 @@
 package main
 
 import (
-	// "io"
 	"log"
 	"net"
 )
@@ -32,11 +31,10 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
+			//TODO: put this loop in its own routine
 			for _, k := range room.connections {
 				k.Write(msg[:read])
 			}
-			// io.Copy(c, c)
-			// c.Close()
 		}(conn)
 	}
 }

@@ -8,12 +8,23 @@ import (
 	"os"
 )
 
+func handleError(e error) {
+	if e != nil {
+		log.Fatal(e)
+	}
+}
+
+func readConn(c net.Conn) {
+	r := make([]byte, 1024)
+	msg, err := c.Read(r)
+	handleError(err)
+	println(string(r[:msg]))
+}
+
 func main() {
 	var uname string
 	conn, err := net.Dial("tcp", "localhost:5050")
-	if err != nil {
-		log.Fatal(err)
-	}
+	handleError(err)
 	println("Connection established.")
 	print("Enter your name: ")
 	fmt.Scanln(&uname)
@@ -23,30 +34,16 @@ func main() {
 		switch {
 		case scanner.Text() == "quit":
 			_, err := conn.Write([]byte(fmt.Sprintf("%v left.", uname)))
-			if err != nil {
-				log.Fatal(err)
-			}
-			r := make([]byte, 255)
-			resp, err := conn.Read(r)
-			if err != nil {
-				log.Fatal(err)
-			}
-			println(string(r[:resp]))
-			conn.Close()
+			handleError(err)
+			readConn(conn)
+			defer conn.Close()
 			os.Exit(1)
 		default:
 			message := []byte(scanner.Text())
-			msg_strt := fmt.Sprintf("%v: %v", uname, string(message))
-			_, err := conn.Write([]byte(msg_strt))
-			if err != nil {
-				log.Fatal(err)
-			}
-			rb := make([]byte, 1024)
-			resp, err := conn.Read(rb)
-			if err != nil {
-				log.Fatal(err)
-			}
-			println(string(rb[:resp]))
+			msgToSend := fmt.Sprintf("%v: %v", uname, string(message))
+			_, err := conn.Write([]byte(msgToSend))
+			readConn(conn)
+			handleError(err)
 		}
 	}
 }

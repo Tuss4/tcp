@@ -16,6 +16,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	println("Server running.")
 	defer l.Close()
 	room := ChatRoom{}
 	for {
@@ -35,6 +36,7 @@ func main() {
 			for _, k := range room.connections {
 				k.Write(msg[:read])
 			}
+			// defer c.Close()
 		}(conn)
 	}
 }

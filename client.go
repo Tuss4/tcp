@@ -21,6 +21,11 @@ func readConn(c net.Conn) {
 	println(string(r[:msg]))
 }
 
+func writeConn(c net.Conn, m string) {
+	_, err := c.Write([]byte(m))
+	handleError(err)
+}
+
 func main() {
 	var uname string
 	conn, err := net.Dial("tcp", "localhost:5050")
@@ -31,19 +36,18 @@ func main() {
 	// Get a loop going
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
+		println("the text:", scanner.Text())
 		switch {
 		case scanner.Text() == "quit":
-			_, err := conn.Write([]byte(fmt.Sprintf("%v left.", uname)))
-			handleError(err)
+			writeConn(conn, fmt.Sprintf("%v left.", uname))
 			readConn(conn)
-			defer conn.Close()
+			conn.Close()
 			os.Exit(1)
 		default:
 			message := []byte(scanner.Text())
-			msgToSend := fmt.Sprintf("%v: %v", uname, string(message))
-			_, err := conn.Write([]byte(msgToSend))
+			writeConn(conn, fmt.Sprintf("%v: %v", uname, string(message)))
 			readConn(conn)
-			handleError(err)
 		}
 	}
+	handleError(scanner.Err())
 }

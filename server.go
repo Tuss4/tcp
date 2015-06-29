@@ -34,9 +34,12 @@ func main() {
 			}
 			//TODO: put this loop in its own routine
 			for _, k := range room.connections {
-				k.Write(msg[:read])
+				_, err := k.Write(msg[:read])
+				if err != nil {
+					log.Fatal(err)
+				}
 			}
-			// defer c.Close()
+			defer c.Close()
 		}(conn)
 	}
 }

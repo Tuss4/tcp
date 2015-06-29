@@ -35,19 +35,21 @@ func main() {
 	fmt.Scanln(&uname)
 	// Get a loop going
 	scanner := bufio.NewScanner(os.Stdin)
+	// Loop:
 	for scanner.Scan() {
-		println("the text:", scanner.Text())
+		t := scanner.Text()
+		println("the text:", t)
 		switch {
-		case scanner.Text() == "quit":
+		case t == "quit":
 			writeConn(conn, fmt.Sprintf("%v left.", uname))
 			readConn(conn)
 			conn.Close()
 			os.Exit(1)
 		default:
-			message := []byte(scanner.Text())
+			message := []byte(t)
 			writeConn(conn, fmt.Sprintf("%v: %v", uname, string(message)))
 			readConn(conn)
 		}
 	}
-	handleError(scanner.Err())
+	println(scanner.Err())
 }
